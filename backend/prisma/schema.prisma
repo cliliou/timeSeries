@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model clientAccount {
+  id Int @id @default(autoincrement())
+  clientName String
+  stickerModelCommands stickerModel[]
+  tagModelCommands tagModel[]
+  compositeTagModelCommands compositTagModel[]
+}
+
+model stickerModel {
+  id Int @id @default(autoincrement())
+  author clientAccount @relation(fields: [authorId], references: [id])
+  authorId Int
+  type stickerType
+  format stickerFormat
+  colors stickerColors[]
+  quantity Int @default(0)
+}
+
+enum stickerType {
+  permanent
+  detachable
+}
+
+enum stickerFormat {
+  roll
+  sheet
+}
+
+enum stickerColors {
+  black
+  white
+  blue
+  red
+  green
+  purple
+  orange
+  yellow
+  brown
+  cyan
+  magenta
+}
+
+model tagModel {
+  id Int @id @default(autoincrement())
+  author clientAccount @relation(fields: [authorId], references: [id])
+  authorId Int
+  size String
+  design String //file path would be stored in an other database
+  quantity Int @default(0)
+}
+
+model compositTagModel {
+  id Int @id @default(autoincrement())
+  author clientAccount @relation(fields: [authorId], references: [id])
+  authorId Int
+  barcodeCode String
+  composition Json
+  size String
+  instructions compositTagInstruction[]
+  price Float
+  currency String
+  origin String
+  quantity Int @default(0)
+}
+
+enum compositTagInstruction {
+  Hashing
+  Bleaching
+  Drying
+  Ironing
+  ProfessionalCare 
+}
